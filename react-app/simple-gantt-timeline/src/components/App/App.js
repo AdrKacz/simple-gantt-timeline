@@ -1,17 +1,15 @@
-import Main from "../Main/Main";
-import Sidebar from "../Sidebar/Sidebar";
+import Timeline from "../Timeline/Timeline"
+
+import MockDatabase from "../../store/mock-database.js"
 
 import './App.css';
 
 function App() {
   return (
-    <div className="AppRoot-fullPage">
-      <div className="AsanaMain">
-        <div className="AsanaMain-mainLayer">
-          <Sidebar />
-          <Main />
-        </div>
-      </div>
+    <div className="App">
+      <Timeline
+        store={MockDatabase} 
+      />
     </div>
   );
 }

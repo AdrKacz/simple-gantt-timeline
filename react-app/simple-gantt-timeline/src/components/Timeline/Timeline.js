@@ -1,25 +1,87 @@
-import TimelineContent from "../TimelineContent/TimelineContent";
-import TimelineDetails from "../TimelineDetails/TimelineDetails";
+// TODO: Anchor point for Timeline with dynamic position
+// TODO: Get Dynamic Window width for TimeAxis
+// NOTE: Dynamic Constant
 
-function Timeline() {
+import Task from "../Task/Task";
+import TimeAxis from "../TimeAxis/TimeAxis";
+
+import './Timeline.css';
+
+// Constant in pixel
+const DAY_WIDTH = 80;
+const TASK_HEIGHT = 50;
+
+const TOP_ORIGIN = 2 * TASK_HEIGHT;
+const LEFT_ORIGIN = 0;
+
+const DEPTH_LIMIT = 100;
+
+// Functions
+// TODO: More resiliant day spread calculator for multiple timezone and change in day time
+function getDaySpread(dateA, dateB) {
+  return Math.floor((dateB.getTime() - dateA.getTime()) / 86400000);
+}
+
+function Timeline({store}) {
+  const dayOrigin = new Date(Date.now() - 7 * 86400000);
+
+  const timelineMap = {};
+  const tasks = [];
+
+  store.forEach((item, _) => {
+    // Get offset and spread
+    const dayOffset = getDaySpread(dayOrigin, item.StartDate);
+    const spread = getDaySpread(item.StartDate, item.DueDate) + 1;
+
+    // Check for collision
+    let j = 0;
+    let isCollision = false;
+    do {
+      isCollision = false;
+      for (let i = 0; i < spread; i++) {
+        if (timelineMap[`${dayOffset + i}:${j}`] === true) {
+          isCollision = true;
+          break;
+        };
+      };
+      j += 1;
+    } while (isCollision && j < DEPTH_LIMIT)
+    j -= 1;
+
+    // Populate map
+    for (let i = 0; i < spread; i++) {
+      timelineMap[`${dayOffset + i}:${j}`] = true;
+    };
+
+    // Add tasks
+    if (dayOffset + spread - 1 >= 0) {
+      tasks.push(
+        <Task
+          key={`${dayOffset}-${j}`}
+          name={item.Name}
+          absoluteTop={TOP_ORIGIN + TASK_HEIGHT * j}
+          absoluteLeft={LEFT_ORIGIN + DAY_WIDTH * dayOffset}
+          width={DAY_WIDTH * spread}
+          height={TASK_HEIGHT}
+        />
+      );
+    };
+  });
+  
   return (
-    <div className="ProjectPage">
-      <div className="ProjectPage-timeline">
-        <div className="ProjectPage-timelineInner">
-          <div className="FullWidthPageStructureWithDetailsOverlay FullWidthPageStructureWithDetailsOverlay--withDetailsOverlayOpen FullWidthPageStructureWithDetailsOverlay--shrinkMainContentForOverlay PotTimelinePage-pageStructure">
-            <div className="FullWidthPageStructureWithDetailsOverlay-fullWidth">
-              <div className="FullWidthPageStructureWithDetailsOverlay-mainContent">
-                <TimelineContent />
-              </div>
-              <div className="FullWidthPageStructureWithDetailsOverlay-detailsOverlay">
-                <TimelineDetails />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div
+    className="Timeline">
+      <TimeAxis
+        topOrigin={TOP_ORIGIN - 2 * TASK_HEIGHT}
+        leftOrigin={LEFT_ORIGIN}
+        maxSpread={50}
+        dayWidth={DAY_WIDTH}
+        dayOrigin={dayOrigin}
+        height={TASK_HEIGHT}
+      />
+      {tasks}
     </div>
-  )
-};
+  );
+}
 
 export default Timeline;

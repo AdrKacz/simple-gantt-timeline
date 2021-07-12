@@ -1,0 +1,17 @@
+div.TimeAxis {
+
+}
+
+div.TimeAxis div.time {
+  position: absolute;
+  text-align: left;
+  overflow: hidden;
+  background-color: bisque;
+}
+
+div.TimeAxis div.month {
+  position: absolute;
+  text-align: left;
+  overflow: visible;
+  background-color: beige;
+}
