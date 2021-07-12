@@ -3,7 +3,7 @@
 
 import './Task.css';
 
-function Task({name, absoluteTop, absoluteLeft, width, height}) {
+function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft}) {
   return (
     <div
       className="Task"
@@ -12,6 +12,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height}) {
         left: absoluteLeft,
         width: width,
         height: height,
+        "padding-left": paddingLeft,
       }}>
       {name}
     </div>

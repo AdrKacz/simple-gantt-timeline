@@ -1,5 +1,5 @@
 // TODO: Anchor point for Timeline with dynamic position
-// TODO: Get Dynamic Window width for TimeAxis
+// TODO: Get Dynamic Window width for TimeAxis (WINDOW_WIDTH)
 // NOTE: Dynamic Constant
 
 import Task from "../Task/Task";
@@ -15,6 +15,10 @@ const TOP_ORIGIN = 2 * TASK_HEIGHT;
 const LEFT_ORIGIN = 0;
 
 const DEPTH_LIMIT = 100;
+
+// Get max number of slot in window
+const WINDOW_WIDTH = window.innerWidth;
+const MAX_SPREAD = Math.floor(WINDOW_WIDTH / DAY_WIDTH);
 
 // Functions
 // TODO: More resiliant day spread calculator for multiple timezone and change in day time
@@ -54,7 +58,7 @@ function Timeline({store}) {
     };
 
     // Add tasks
-    if (dayOffset + spread - 1 >= 0) {
+    if (dayOffset + spread - 1 >= 0 && dayOffset < MAX_SPREAD) {
       tasks.push(
         <Task
           key={`${dayOffset}-${j}`}
@@ -63,18 +67,19 @@ function Timeline({store}) {
           absoluteLeft={LEFT_ORIGIN + DAY_WIDTH * dayOffset}
           width={DAY_WIDTH * spread}
           height={TASK_HEIGHT}
+          paddingLeft={-Math.min(dayOffset, 0) * DAY_WIDTH}
         />
       );
     };
   });
-  
+
   return (
     <div
     className="Timeline">
       <TimeAxis
         topOrigin={TOP_ORIGIN - 2 * TASK_HEIGHT}
         leftOrigin={LEFT_ORIGIN}
-        maxSpread={50}
+        maxSpread={MAX_SPREAD}
         dayWidth={DAY_WIDTH}
         dayOrigin={dayOrigin}
         height={TASK_HEIGHT}

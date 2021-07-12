@@ -35,6 +35,19 @@ const store =  [
     StartDate: new Date(Date.now() - 86400000),
     DueDate: new Date(Date.now() - 86400000),
   },
+  {
+    Id: "7",
+    Name: "Task 7",
+    StartDate: new Date(Date.now() + 25 * 86400000),
+    DueDate: new Date(Date.now() + 35 * 86400000),
+  },
+
+  {
+    Id: "8",
+    Name: "Task 8",
+    StartDate: new Date(Date.now() - 10 * 86400000),
+    DueDate: new Date(Date.now() - 5 * 86400000),
+  },
 ];
 
 export default store;
