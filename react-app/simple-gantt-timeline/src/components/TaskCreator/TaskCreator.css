@@ -1,0 +1,9 @@
+div.TaskCreator {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+
+  height: 100%;
+
+  cursor: crosshair;
+}

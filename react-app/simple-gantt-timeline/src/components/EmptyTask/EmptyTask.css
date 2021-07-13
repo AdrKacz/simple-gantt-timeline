@@ -1,0 +1,8 @@
+div.EmptyTask {
+  position: absolute;
+
+  text-align: left;
+  overflow: hidden;
+
+  background-color: lightblue;
+}

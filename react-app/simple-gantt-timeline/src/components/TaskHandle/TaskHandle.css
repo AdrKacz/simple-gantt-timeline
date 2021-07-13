@@ -1,0 +1,9 @@
+div.TaskHandle {
+  cursor: ew-resize;
+  background-color: red;
+
+  padding: 0;
+  margin: 0;
+
+  display: inline-block;
+}

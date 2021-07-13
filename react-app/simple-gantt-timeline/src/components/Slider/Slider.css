@@ -1,0 +1,39 @@
+div.Slider {
+  padding: 0.5rem 1rem;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+div.Slider button {
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+
+  font-size: 100%;
+  font-family: inherit;
+  border: 0;
+  padding: 0;
+
+  padding: 0.5rem 1rem;
+
+  background-color: lightgrey;
+}
+
+div.Slider button:hover {
+  background-color: grey;
+}

@@ -18,11 +18,11 @@ function useKeyPress(targetKey) {
   // Add event listener
   useEffect(() => {
     window.addEventListener("keydown", downHandler);
-    window.addEventListener("keydown", upHandler);
+    window.addEventListener("keyup", upHandler);
     // Remove event listeners on cleanup
     return () => {
       window.removeEventListener("keydown", downHandler);
-      window.removeEventListener("keydown", upHandler);
+      window.removeEventListener("keyup", upHandler);
     };
   }, []); // Empty array ensures that effects is only run on mount and unmount
   return keyPressed;
