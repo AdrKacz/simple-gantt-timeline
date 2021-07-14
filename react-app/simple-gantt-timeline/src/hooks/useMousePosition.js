@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 let listeningCounter = 0;
 const eventTargets = {};
 const listenTargets = {};
 
-function positionHandler({offsetX, offsetY}) {
-  const updatePositionEvent = new CustomEvent("updateposition", {detail: {offsetX: offsetX, offsetY: offsetY}})
+function positionHandler({clientX, clientY}) {
+  const updatePositionEvent = new CustomEvent("updateposition", {detail: {x: clientX, y: clientY}})
   Object.values(eventTargets).forEach((item, _) => {
     item.dispatchEvent(updatePositionEvent);
   });
 };
 
-function mouseUpHandler({}) {
+function mouseUpHandler() {
   Object.keys(listenTargets).forEach((key, _) => {
     listenTargets[key] = false;
   });
@@ -24,20 +24,20 @@ function useMousePosition(targetKey) {
 
   // console.table(listenTargets);
 
-  const [offsetX, setOffsetX] = useState();
-  const [offsetY, setOffsetY] = useState();
+  const [offset, setOffset] = useState([undefined, undefined]);
 
   function setIsListening(isListening) {
     listenTargets[targetKey] = isListening;
   }
 
-  function updatePositionHandler(e) {
-    if (listenTargets[targetKey]) {
-      setOffsetX(e.detail.offsetX);
-      setOffsetY(e.detail.offsetY);
-    };
-  };
-
+  const memoizedUpdatePositionHandler = useCallback(
+    (e) => {
+      if (listenTargets[targetKey]) {
+        setOffset([e.detail.x, e.detail.y]);
+      };
+    },
+    [targetKey],
+  );
 
   useEffect(() => {
     // Attach global listener to window
@@ -46,12 +46,12 @@ function useMousePosition(targetKey) {
       window.addEventListener("mouseup", mouseUpHandler);
     };
     // Send update to local listener if any
-    eventTargets[targetKey].addEventListener("updateposition", updatePositionHandler);
+    eventTargets[targetKey].addEventListener("updateposition", memoizedUpdatePositionHandler);
 
     listeningCounter += 1; // How many component are listening to mouse position
     return () => {
       // Remove update to local listener if any
-      eventTargets[targetKey].removeEventListener("updateposition", updatePositionHandler);
+      eventTargets[targetKey].removeEventListener("updateposition", memoizedUpdatePositionHandler);
 
       listeningCounter -= 1; // How many component are listening to mouse position
 
@@ -61,9 +61,9 @@ function useMousePosition(targetKey) {
         window.removeEventListener("mouseup", mouseUpHandler);
       };
     };
-  }, []);
+  }, [targetKey, memoizedUpdatePositionHandler]);
 
-  return [offsetX, offsetY, setIsListening];
+  return [listenTargets[targetKey] ? offset[0] : undefined, setIsListening];
 }
 
 export default useMousePosition;

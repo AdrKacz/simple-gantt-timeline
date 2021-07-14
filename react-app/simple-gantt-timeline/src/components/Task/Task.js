@@ -5,17 +5,15 @@ import TaskHandle from "../TaskHandle/TaskHandle";
 
 import './Task.css';
 
-function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskSelected, taskKey}) {
-  taskSelected = taskSelected ?? ((_) => (undefined));
-
+function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask}) {
   function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  function handleTaskSelected() {
-    taskSelected();
-  };
+  function updateTaskHandleSide(side, clientX) {
+    updateTask(side, clientX)
+  }
 
   return (
     <div
@@ -32,12 +30,12 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
         handleKey={`${taskKey}:left`}
         width={10}
         height={height}
-        handleSelected={handleTaskSelected}
+        updateTaskHandle={(clientX) => (updateTaskHandleSide("left", clientX))}
       />
       <div
         className="text-container"
         style={{
-          "padding-left": paddingLeft,
+          "padding-left": paddingLeft, // NOTE: Trigger an error for no reason
         }}
       >
       {name}
@@ -46,7 +44,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
         handleKey={`${taskKey}:right`}
         width={10}
         height={height}
-        handleSelected={handleTaskSelected}
+        updateTaskHandle={(clientX) => (updateTaskHandleSide("right", clientX))}
       />
     </div>
   );

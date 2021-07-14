@@ -11,29 +11,34 @@ import './Timeline.css';
 
 import {
   EMPTY_TASK_MAX_SPREAD,
-  DEPTH_LIMIT,
 } from "../../constants/constants"
 
 // Functions
-// TODO: More resiliant day spread calculator for multiple timezone and change in day time
-function getDaySpread(dateA, dateB) {
-  return Math.floor((dateB.getTime() - dateA.getTime()) / 86400000);
-};
+import getDaySpread from "../../helpers/getDaySpread";
 
-function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWidth, taskHeigh, store, editTask}) {
-  editTask = editTask ?? ((_) => (undefined));
+function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWidth, taskHeigh, store, editStoreTask}) {
+  editStoreTask = editStoreTask ?? ((_) => (undefined));
 
+  function handleMouseUp() {
+    validateEditedTask();
+    setEditedTask({});
+  };
 
   // TODO: Both can be merged
   const [emptyTask, setEmptyTask] = useState({});
-  const [editableTask, setEditableTask] = useState({});
+  const [editedTask, setEditedTask] = useState({});
 
   const dayOrigin = new Date(fromDate.getTime());
   const timelineMap = {};
+  const localStoreMapInfo = {}
   const tasks = [];
 
   store.forEach((item, _) => {
-    placeTask(item, Task);
+    if (editedTask.Id === item.Id) {
+      placeTask(editedTask, Task);
+    } else {
+      placeTask(item, Task);
+    };
   });
   if (emptyTask.StartDate && emptyTask.DueDate) {
     placeTask(emptyTask, EmptyTask);
@@ -44,46 +49,20 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     const dayOffset = getDaySpread(dayOrigin, item.StartDate);
     const spread = getDaySpread(item.StartDate, item.DueDate) + 1;
 
-    let row = -1, column = dayOffset;
-    if (item.row) {
-      // Check for collision
-      let isCollision = false;
-      for (let i = 0; i < spread; i++) {
-        if (timelineMap[`${column + i}:${item.row}`] === true) {
-          isCollision = true;
-          break;
-        };
-      };
-      if (!isCollision) {
-        row = item.row;
-      };
-    };
-
-    // Not set yet
-    if (row === -1) {
-      // Find no collision
-      let j = 0;
-      let isCollision = false;
-      do {
-        isCollision = false;
-        for (let i = 0; i < spread; i++) {
-          if (timelineMap[`${column + i}:${j}`] === true) {
-            isCollision = true;
-            break;
-          };
-        };
-        j += 1;
-      } while (isCollision && j < DEPTH_LIMIT)
-      row = j- 1;
-    };
+    let row = item.row, column = dayOffset;
 
     // Populate map
     for (let i = 0; i < spread; i++) {
-      timelineMap[`${column + i}:${row}`] = true;
+      timelineMap[`${column + i}:${row}`] = item.Id;
     };
-
+    localStoreMapInfo[item.Id] = {
+      column: column,
+      row: row,
+      spread: spread,
+    };
     // Add tasks
     if (column + spread - 1 >= 0 && column < maxSpread) {
+
       tasks.push(
         <Template
           taskKey={`Task-${item.Id}`}
@@ -95,10 +74,19 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           height={taskHeigh}
           paddingLeft={-Math.min(column, 0) * dayWidth}
           setName={(value) => (setEmptyTask({...emptyTask, Name:value}))}
-          taskSelected={(_) => (taskSelected(item.Id))}
+          updateTask={(side, clientX) => (updateLocalTask(item.Id, side, clientX))}
         />
       );
     };
+  }
+
+  function validateEditedTask() {
+    // Only validate if task exist
+    if (!editedTask.Id || !editedTask.Name || !editedTask.StartDate || !editedTask.DueDate) {
+      return;
+    };
+
+    editStoreTask({...editedTask});
   }
 
   function validateEmptyTask() {
@@ -108,7 +96,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     };
 
     const taskId = Date.now()
-    editTask({...emptyTask, Id: taskId});
+    editStoreTask({...emptyTask, Id: taskId});
   }
 
   function createTask(column, row) {
@@ -120,7 +108,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     };
     let i = 0
     for (i = 0; i < EMPTY_TASK_MAX_SPREAD; i++) {
-      if (timelineMap[`${column + i}:${row}`] === true) {
+      if (timelineMap[`${column + i}:${row}`]) {
         break
       };
     };
@@ -137,16 +125,64 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     });
   }
 
-  function taskSelected(id) {
-    return;
-  }
+  function updateLocalTask(taskId, side, clientX) {
+    if (!taskId || !side || !clientX) {
+      return;
+    }
+    // console.log("... Try to edit Local Task", taskId, side, clientX)
+    let localTask;
+    if (editedTask.Id === taskId) {
+      localTask = {...editedTask};
+    } else {
+      for (let i = 0; i < store.length; i++) {
+        if (store[i].Id === taskId) {
+          localTask = {...store[i]}
+          break;
+        };
+      };
+    };
+    const fromColumn = localStoreMapInfo[taskId].column;
+    const toColumn = localStoreMapInfo[taskId].column + localStoreMapInfo[taskId].spread - 1;
+    const localRow = localStoreMapInfo[taskId].row;
+    // console.log("... With", localTask.Id, fromColumn, toColumn, localRow)
+    const localColumn = Math.floor((clientX - leftOrigin) / dayWidth);
+    // console.log("...With", localColumn, fromColumn, toColumn)
 
-  function editTask(id, {StartDate, DueDate}) {
+    if (side === "left") {
+      if (localColumn > toColumn) {
+        return;
+      }
+      for (let i = Math.min(localColumn, fromColumn); i <= Math.max(localColumn, fromColumn); i++) {
+        if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {
+          return;
+        };
+      };
+      setEditedTask({
+        ...localTask,
+        StartDate: new Date(localTask.StartDate.getTime() + (localColumn - fromColumn) * 86400000),
+      });
+
+    } else if (side === "right") {
+      if (localColumn < fromColumn) {
+        return;
+      }
+      for (let i = Math.min(localColumn, toColumn); i <= Math.max(localColumn, toColumn); i++) {
+        if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {
+          return;
+        };
+      };
+      setEditedTask({
+        ...localTask,
+        DueDate: new Date(localTask.DueDate.getTime() + (localColumn - toColumn) * 86400000),
+      });
+    };
+
     return;
-  }
+  };
 
   return (
     <div
+      onMouseUp={handleMouseUp}
       className="Timeline"
     >
       <TaskCreator

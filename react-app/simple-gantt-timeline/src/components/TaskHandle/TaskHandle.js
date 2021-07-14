@@ -1,17 +1,19 @@
+import { useEffect } from "react";
+
 import useMousePosition from "../../hooks/useMousePosition";
 
 import './TaskHandle.css';
 
-function TaskHandle({width, height, handleSelected, handleKey}) {
-  handleSelected = handleSelected ?? ((_) => (undefined));
-
+function TaskHandle({width, height, handleKey, updateTaskHandle}) {
   // Optmise handler to not update at every frame
-  const [offsetX, offsetY, setIsListening] = useMousePosition(handleKey);
-  console.log(`[${handleKey}] Mouse Position: X > ${offsetX} - Y > ${offsetY}`)
-
+  const [clientX, setIsListening] = useMousePosition(handleKey);
   function handleMouseDown(e) {
     setIsListening(true);
-  }
+  };
+
+  useEffect(() => {
+    updateTaskHandle(clientX)
+  }, [clientX, updateTaskHandle]);
 
   return (
     <div

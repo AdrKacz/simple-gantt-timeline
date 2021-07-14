@@ -9,13 +9,15 @@ import {
   TASK_HEIGHT,
 } from "../../constants/constants"
 
+import getStoreWithRow from "../../helpers/getStoreWithRow";
+
 import MockDatabase from "../../store/mock-database.js";
 
 import './App.css';
 
 function App() {
   // localStore to be remove if use real endpoint
-  const [localStore, setLocalStore] = useState({...MockDatabase})
+  const [localStore, setLocalStore] = useState(getStoreWithRow(MockDatabase));
 
   const [fromDate, setFromDate] = useState(new Date(Date.now() - 7 * 86400000))
 
@@ -26,7 +28,7 @@ function App() {
   const maxSpread = Math.floor(windowWidth / DAY_WIDTH);
 
   function editTask(task) {
-    // Do nothing if task not vali
+    // Do nothing if task not valid
     if (!task.Id || !task.Name || !task.StartDate || !task.DueDate) {
       return;
     };
@@ -59,7 +61,7 @@ function App() {
         dayWidth={DAY_WIDTH}
         taskHeigh={TASK_HEIGHT}
         store={Object.values(localStore)}
-        editTask={editTask}
+        editStoreTask={editTask}
       />
     </div>
   );
