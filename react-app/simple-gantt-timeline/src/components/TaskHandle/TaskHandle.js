@@ -1,18 +1,21 @@
+import useMousePosition from "../../hooks/useMousePosition";
+
 import './TaskHandle.css';
 
-function TaskHandle({width, height, handleSelected}) {
-  handleSelected = handleSelected ?? ((_) => (undefined))
+function TaskHandle({width, height, handleSelected, handleKey}) {
+  handleSelected = handleSelected ?? ((_) => (undefined));
 
-  function handleClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  // Optmise handler to not update at every frame
+  const [offsetX, offsetY, setIsListening] = useMousePosition(handleKey);
+  console.log(`[${handleKey}] Mouse Position: X > ${offsetX} - Y > ${offsetY}`)
 
-    handleSelected();
+  function handleMouseDown(e) {
+    setIsListening(true);
   }
 
   return (
     <div
-      onClick={handleClick}
+      onMouseDown={handleMouseDown}
       className="TaskHandle"
       style={{
         width: width,

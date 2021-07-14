@@ -5,7 +5,7 @@ import TaskHandle from "../TaskHandle/TaskHandle";
 
 import './Task.css';
 
-function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskSelected}) {
+function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskSelected, taskKey}) {
   taskSelected = taskSelected ?? ((_) => (undefined));
 
   function handleClick(e) {
@@ -29,6 +29,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
       }}
     >
       <TaskHandle
+        handleKey={`${taskKey}:left`}
         width={10}
         height={height}
         handleSelected={handleTaskSelected}
@@ -42,6 +43,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
       {name}
       </div>
       <TaskHandle
+        handleKey={`${taskKey}:right`}
         width={10}
         height={height}
         handleSelected={handleTaskSelected}

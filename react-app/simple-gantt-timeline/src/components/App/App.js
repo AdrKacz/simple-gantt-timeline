@@ -4,8 +4,6 @@ import Slider from "../Slider/Slider";
 import TimeAxis from "../TimeAxis/TimeAxis";
 import Timeline from "../Timeline/Timeline";
 
-import useClickEvent from "../../hooks/useClickEvent"
-
 import {
   DAY_WIDTH,
   TASK_HEIGHT,
@@ -16,8 +14,6 @@ import MockDatabase from "../../store/mock-database.js";
 import './App.css';
 
 function App() {
-  const [clickPressed, isListening, setIsListening] = useClickEvent(false);
-  
   // localStore to be remove if use real endpoint
   const [localStore, setLocalStore] = useState({...MockDatabase})
 

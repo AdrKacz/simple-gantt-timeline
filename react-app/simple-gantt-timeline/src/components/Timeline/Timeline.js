@@ -86,6 +86,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     if (column + spread - 1 >= 0 && column < maxSpread) {
       tasks.push(
         <Template
+          taskKey={`Task-${item.Id}`}
           key={`${column}-${row}`}
           name={item.Name}
           absoluteTop={topOrigin + taskHeigh * row}
