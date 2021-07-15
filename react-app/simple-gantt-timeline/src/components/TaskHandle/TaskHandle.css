@@ -6,4 +6,20 @@ div.TaskHandle {
   margin: 0;
 
   display: inline-block;
+
+  color: var(--color-text);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+
+  font-size: 14px;
+  line-height: normal;
+
+  user-select: none;
+
+  width: 10px;
+  border-radius: 0 4px 4px 0;
+  bottom: 0;
+  transition: opacity 100ms;
+  right: -9px;
+  background-color: var(--color-background-hover);
+  opacity: 1;
 }

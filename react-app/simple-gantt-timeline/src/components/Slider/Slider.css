@@ -3,7 +3,7 @@ div.Slider {
 }
 
 .arrow {
-  border: solid black;
+  border: solid var(--color-button-text-secondary);
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
@@ -29,11 +29,13 @@ div.Slider button {
   border: 0;
   padding: 0;
 
+  border-radius: 4px;
+
   padding: 0.5rem 1rem;
 
-  background-color: lightgrey;
+  background-color: var(--color-button-background-secondary);
 }
 
 div.Slider button:hover {
-  background-color: grey;
+  background-color: var(--color-button-background-secondary-hover);;
 }

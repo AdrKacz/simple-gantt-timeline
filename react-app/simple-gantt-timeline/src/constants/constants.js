@@ -3,8 +3,8 @@
 // Constant in pixel
 
 // For App
-export const DAY_WIDTH = 80;
-export const TASK_HEIGHT = 50;
+export const DAY_WIDTH = 64;
+export const TASK_HEIGHT = 34;
 
 // For Timeline
 export const EMPTY_TASK_MAX_SPREAD = 5;

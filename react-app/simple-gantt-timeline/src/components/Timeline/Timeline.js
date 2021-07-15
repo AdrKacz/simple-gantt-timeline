@@ -106,6 +106,9 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
       setEmptyTask({});
       return;
     };
+    if (!column || !row) {
+      return;
+    }
     let i = 0
     for (i = 0; i < EMPTY_TASK_MAX_SPREAD; i++) {
       if (timelineMap[`${column + i}:${row}`]) {
@@ -177,11 +180,10 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     } else if (side === "all") {
       const localColumn = Math.floor((clientX - leftOrigin) / dayWidth);
       const localRow = Math.floor((clientY - topOrigin) / taskHeigh);
-      const columnShift = Math.floor(localColumn - (toColumn + fromColumn) / 2);
-      if (localRow < 0 || columnShift === 0) {
+      const columnShift = Math.floor(localColumn - (toColumn + fromColumn) / 2);  // Grab alway is the middle for now
+      if (localRow < 0 || (columnShift + (localRow - currentRow)  === 0)) {
         return;
       };
-      // Grab alway is the middle for now
 
       for (let i = fromColumn + columnShift; i <= toColumn + columnShift; i++) {
         if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {

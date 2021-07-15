@@ -76,7 +76,7 @@ function useMousePosition(targetKey) {
   return [
     listenTargets[targetKey] ? offset[0] : undefined,
     listenTargets[targetKey] ? offset[1] : undefined,
-    setIsListening
+    setIsListening,
   ];
 }
 

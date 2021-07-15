@@ -1,9 +1,13 @@
 div.App {
+  color: var(--color-text);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  line-height: normal;
+  cursor: cell;
+  height: 100%;
+  width: 100%;
+  left: 0;
   position: absolute;
   top: 0;
-  left: 0;
-
-  width: 100vw;
-  height: 100vh;
   overflow: hidden;
 }

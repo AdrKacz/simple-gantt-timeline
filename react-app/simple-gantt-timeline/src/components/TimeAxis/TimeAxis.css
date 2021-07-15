@@ -6,12 +6,68 @@ div.TimeAxis div.time {
   position: absolute;
   text-align: left;
   overflow: hidden;
-  background-color: bisque;
+
+  color: var(--color-text);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  bottom: 0;
+  font-size: 12px;
+  line-height: 26px;
+  text-align: center;
+  user-select: none;
+
+  background: var(--color-background-weak);
+  border-bottom: 1px solid var(--color-border-strong);
 }
 
 div.TimeAxis div.month {
   position: absolute;
   text-align: left;
+
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height: normal;
+  color: #9ca6af;
+  font-size: 14px;
+  font-weight: 300;
+  height: 14px;
+
+  overflow: hidden;
+  padding: 8px 8px 4px;
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+  position: absolute;
+}
+
+div.TimeAxis div.todaymarker {
+  position: absolute;
   overflow: visible;
-  background-color: beige;
+  pointer-events: all;
+
+  line-height: normal;
+  background-color: var(--color-selected-border);
+  border-radius: 50%;
+
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  left: calc(50% - 4px);
+
+  z-index: 100;
+
+  transform: translate(-50%, -50%);
+}
+
+div.TimeAxis div.todaystrip {
+  position: absolute;
+
+  line-height: normal;
+  cursor: cell;
+
+  background: var(--color-selected-border);
+
+  opacity: .2;
+  width: 2px;
+  height: 100%;
+
+  transform: translate(-50%, 0);
 }

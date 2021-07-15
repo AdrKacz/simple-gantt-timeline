@@ -3,6 +3,24 @@ div.EmptyTask {
 
   text-align: left;
   overflow: hidden;
+}
 
-  background-color: lightblue;
+div.EmptyTask input,
+div.EmptyTask input:focus {
+
+  margin-left: 0.5rem;
+
+  width: 90%;
+
+  text-align: left;
+  overflow: hidden;
+
+  outline: none;
+  border: none;
+
+  line-height: 14px;
+  min-width: 1em;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 12px;
+  color: var(--color-text);
 }

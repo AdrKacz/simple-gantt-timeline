@@ -1,9 +1,16 @@
+import { useEffect } from "react";
+
 import './TaskCreator.css';
 
+import useKeyPress from "../../hooks/useKeyPress";
+
 function TaskCreator({absoluteTop, absoluteLeft, width, height, dayWidth, taskHeigh, createTask}) {
+  const enterPressed = useKeyPress("Enter")
+
   function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
+    console.log("Click Press", e)
 
     const offsetX = e.nativeEvent.offsetX;
     const offsetY = e.nativeEvent.offsetY;
@@ -14,10 +21,17 @@ function TaskCreator({absoluteTop, absoluteLeft, width, height, dayWidth, taskHe
     createTask(column, row)
   }
 
+  useEffect(() => {
+    if (enterPressed) {
+      createTask()
+    }
+  }, [enterPressed, createTask])
+
   return (
     <div
     className="TaskCreator"
     onClick={handleClick}
+    tabIndex={0}
     style={{
       top: absoluteTop,
       left: absoluteLeft,

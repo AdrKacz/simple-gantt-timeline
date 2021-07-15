@@ -5,7 +5,7 @@ import useMousePosition from "../../hooks/useMousePosition";
 import './TaskHandle.css';
 
 function TaskHandle({width, height, handleKey, updateTaskHandle}) {
-  const [clientX, ,setIsListening] = useMousePosition(handleKey);
+  const [clientX, , setIsListening] = useMousePosition(handleKey);
   function handleMouseDown(e) {
     setIsListening(true);
   };
@@ -19,7 +19,6 @@ function TaskHandle({width, height, handleKey, updateTaskHandle}) {
       onMouseDown={handleMouseDown}
       className="TaskHandle"
       style={{
-        width: width,
         height: height,
       }}
     >
