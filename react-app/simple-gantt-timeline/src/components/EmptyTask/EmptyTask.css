@@ -5,8 +5,8 @@ div.EmptyTask {
   overflow: hidden;
 }
 
-div.EmptyTask input,
-div.EmptyTask input:focus {
+div.EmptyTask input.emptytaskname,
+div.EmptyTask input.emptytaskname:focus {
 
   margin-left: 0.5rem;
 

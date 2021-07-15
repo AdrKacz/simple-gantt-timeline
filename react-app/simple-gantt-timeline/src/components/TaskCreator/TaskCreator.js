@@ -10,7 +10,6 @@ function TaskCreator({absoluteTop, absoluteLeft, width, height, dayWidth, taskHe
   function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Click Press", e)
 
     const offsetX = e.nativeEvent.offsetX;
     const offsetY = e.nativeEvent.offsetY;

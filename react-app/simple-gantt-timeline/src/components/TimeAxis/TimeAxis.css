@@ -19,6 +19,12 @@ div.TimeAxis div.time {
   border-bottom: 1px solid var(--color-border-strong);
 }
 
+div.TimeAxis div.time.weekendday {
+  color: var(--color-text-weak);
+  background-color: transparent;
+
+}
+
 div.TimeAxis div.month {
   position: absolute;
   text-align: left;
@@ -70,4 +76,19 @@ div.TimeAxis div.todaystrip {
   height: 100%;
 
   transform: translate(-50%, 0);
+}
+
+div.TimeAxis div.weekend {
+  position: absolute;
+  bottom: 0;
+  background: var(--color-background-strong-deprecated);
+
+  border-radius: 8px 8px 0 0;
+}
+
+div.TimeAxis div.timebackground {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: var(--color-background-medium);
 }

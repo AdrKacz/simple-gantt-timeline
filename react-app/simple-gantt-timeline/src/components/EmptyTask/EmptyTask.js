@@ -14,7 +14,7 @@ function EmptyTask({name, absoluteTop, absoluteLeft, width, height, paddingLeft,
     e.preventDefault();
     e.stopPropagation();
 
-    setName(e.target.value)
+    setName(e.target.value);
   };
 
   useEffect(() => {
@@ -34,6 +34,7 @@ function EmptyTask({name, absoluteTop, absoluteLeft, width, height, paddingLeft,
       }}
     >
       <input
+        className="emptytaskname"
         ref={inputRef}
         value={name}
         onChange={handleChange}

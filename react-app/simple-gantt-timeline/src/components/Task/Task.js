@@ -9,7 +9,7 @@ import useMousePosition from "../../hooks/useMousePosition";
 
 import './Task.css';
 
-function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask}) {
+function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask, launchEditTaskObject}) {
   const [clientX, clientY, setIsListening] = useMousePosition(taskKey);
 
   function handleMouseDown(e) {
@@ -20,6 +20,13 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
     updateTask(side, clientX, 0);
   };
 
+  function handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    launchEditTaskObject();
+  }
+
   useEffect(() => {
     updateTask("all", clientX, clientY);
   }, [clientX, clientY, updateTask])
@@ -27,6 +34,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
   return (
     <div
       className="Task"
+      onClick={handleClick}
       style={{
         top: absoluteTop,
         left: absoluteLeft,
@@ -35,6 +43,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
       }}
     >
       <TaskHandle
+        isLeft
         handleKey={`${taskKey}:left`}
         width={10}
         height={height}

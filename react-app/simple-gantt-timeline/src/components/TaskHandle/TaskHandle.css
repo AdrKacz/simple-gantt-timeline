@@ -16,10 +16,17 @@ div.TaskHandle {
   user-select: none;
 
   width: 10px;
-  border-radius: 0 4px 4px 0;
   bottom: 0;
   transition: opacity 100ms;
   right: -9px;
-  background-color: var(--color-background-hover);
+  background-color: var(--color-sidebar-background-strong);
   opacity: 1;
+}
+
+div.TaskHandle.handleleft {
+  border-radius: 4px 0 0 4px;
+}
+
+div.TaskHandle.handleright {
+  border-radius: 0 4px 4px 0;
 }

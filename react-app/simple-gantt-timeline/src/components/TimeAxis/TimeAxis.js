@@ -21,8 +21,10 @@ function TimeAxis({topOrigin, leftOrigin, maxSpread, dayWidth, dayOrigin, height
   const months = [];
   const dates = [];
   const today = [];
+  const weekends = [];
 
-  Array(maxSpread).fill(0).forEach((item, i) => {
+  Array(maxSpread + 1).fill(0).forEach((item, i) => {
+    i -= 1; // Start one day earlier to catch Sunday weekend strip
     // Get Date
     const currentDay = new Date(dayOrigin.getTime() + i * 86400000)
 
@@ -30,7 +32,7 @@ function TimeAxis({topOrigin, leftOrigin, maxSpread, dayWidth, dayOrigin, height
     dates.push(
       <div
         key={`date-${i}`}
-        className="time"
+        className={`time${(currentDay.getDay() === 5 || currentDay.getDay() === 6) ? " weekendday" : ""}`}
         style={{
           top: topOrigin + height,
           left: leftOrigin + dayWidth * i,
@@ -51,8 +53,7 @@ function TimeAxis({topOrigin, leftOrigin, maxSpread, dayWidth, dayOrigin, height
             top: topOrigin + 2 * height,
             left: leftOrigin + dayWidth * i + dayWidth / 2,
           }}
-        >
-        </div>
+        />
       );
 
       today.push(
@@ -63,10 +64,24 @@ function TimeAxis({topOrigin, leftOrigin, maxSpread, dayWidth, dayOrigin, height
             top: topOrigin + 2 * height,
             left: leftOrigin + dayWidth * i + dayWidth / 2,
           }}
-        >
-        </div>
+        />
       );
     };
+
+    // Add weekends (if Saturday -5-)
+    if (currentDay.getDay() === 5) {
+      weekends.push(
+        <div
+          key={`weekends-${i}`}
+          className="weekend"
+          style={{
+            top: topOrigin + height,
+            left: leftOrigin + dayWidth * i,
+            width: 2 * dayWidth,
+          }}
+        />
+      )
+    }
 
     // Add Month
     if (i === 0 || currentDay.getDate() === 1) {
@@ -87,6 +102,14 @@ function TimeAxis({topOrigin, leftOrigin, maxSpread, dayWidth, dayOrigin, height
 
   return (
     <div className="TimeAxis">
+      <div
+        className="timebackground"
+        style={{
+          top: topOrigin + 2 * height,
+          left: leftOrigin,
+        }}
+      />
+      {weekends}
       {months}
       {dates}
       {today}

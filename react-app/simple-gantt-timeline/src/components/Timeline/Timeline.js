@@ -6,6 +6,7 @@ import { useState } from "react";
 import Task from "../Task/Task";
 import EmptyTask from "../EmptyTask/EmptyTask";
 import TaskCreator from "../TaskCreator/TaskCreator";
+import EditTaskPanel from "../EditTaskPanel/EditTaskPanel";
 
 import './Timeline.css';
 
@@ -20,13 +21,16 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
   editStoreTask = editStoreTask ?? ((_) => (undefined));
 
   function handleMouseUp() {
-    validateEditedTask();
-    setEditedTask({});
+    if (!isEditTaskPanelOpen && editedTask.Id) {
+      validateRunningTasks();
+    };
   };
 
   // TODO: Both can be merged
   const [emptyTask, setEmptyTask] = useState({});
   const [editedTask, setEditedTask] = useState({});
+
+  const [isEditTaskPanelOpen, setIsEditTaskPanelOpen] = useState(false);
 
   const dayOrigin = new Date(fromDate.getTime());
   const timelineMap = {};
@@ -43,6 +47,21 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
   if (emptyTask.StartDate && emptyTask.DueDate) {
     placeTask(emptyTask, EmptyTask);
   };
+
+  function findTask(taskId) {
+    let localTask;
+    if (editedTask.Id === taskId) {
+      localTask = {...editedTask};
+    } else {
+      for (let i = 0; i < store.length; i++) {
+        if (store[i].Id === taskId) {
+          localTask = {...store[i]}
+          break;
+        };
+      };
+    };
+    return localTask;
+  }
 
   function placeTask(item, Template) {
     // Get offset and spread
@@ -75,6 +94,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           paddingLeft={-Math.min(column, 0) * dayWidth}
           setName={(value) => (setEmptyTask({...emptyTask, Name:value}))}
           updateTask={(...args) => (updateLocalTask(item.Id, ...args))}
+          launchEditTaskObject={() => (launchEditLocalTaskObject(item.Id))}
         />
       );
     };
@@ -99,13 +119,29 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     editStoreTask({...emptyTask, Id: taskId});
   }
 
+  function validateRunningTasks() {
+    // Validate empty and edited task
+    if (emptyTask.StartDate && emptyTask.DueDate) {
+      validateEmptyTask();
+      setEmptyTask({});
+      return true;
+    } else if (editedTask.Id) {
+      if (isEditTaskPanelOpen) {
+        setIsEditTaskPanelOpen(false);
+      };
+      validateEditedTask();
+      setEditedTask({});
+      return true;
+    };
+    return false;
+  }
+
   function createTask(column, row) {
     // Just remove if already there
-    if (emptyTask.StartDate && emptyTask.DueDate) {
-      validateEmptyTask()
-      setEmptyTask({});
+    if (validateRunningTasks()) {
       return;
     };
+
     if (!column || !row) {
       return;
     }
@@ -128,28 +164,34 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     });
   }
 
+  function launchEditLocalTaskObject(taskId) {
+    // Verification if creation / edition running (should not happen)
+    if (validateRunningTasks()) {
+      return;
+    };
+
+    // Open Edition panel
+    const localTask = findTask(taskId);
+    setIsEditTaskPanelOpen(true);
+    setEditedTask(localTask);
+  }
+
+  function editCurrentLocalTaskObject(newTaskObject) {
+    setEditedTask(newTaskObject);
+  }
+
   function updateLocalTask(taskId, side, clientX, clientY) {
     if (!taskId || !side || (!clientX && !clientY)) {
       return;
     }
-    let localTask;
-    if (editedTask.Id === taskId) {
-      localTask = {...editedTask};
-    } else {
-      for (let i = 0; i < store.length; i++) {
-        if (store[i].Id === taskId) {
-          localTask = {...store[i]}
-          break;
-        };
-      };
-    };
+    const localTask = findTask(taskId);
     const fromColumn = localStoreMapInfo[taskId].column;
     const toColumn = localStoreMapInfo[taskId].column + localStoreMapInfo[taskId].spread - 1;
     const currentRow = localStoreMapInfo[taskId].row;
 
     if (side === "left") {
       const localColumn = Math.floor((clientX - leftOrigin - dayWidth / 2) / dayWidth);
-      if (localColumn > toColumn) {
+      if (localColumn > toColumn || localColumn - fromColumn === 0) {
         return;
       }
       for (let i = Math.min(localColumn, fromColumn); i <= Math.max(localColumn, fromColumn); i++) {
@@ -164,7 +206,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
 
     } else if (side === "right") {
       const localColumn = Math.floor((clientX - leftOrigin - dayWidth / 2) / dayWidth);
-      if (localColumn < fromColumn) {
+      if (localColumn < fromColumn || localColumn - toColumn === 0) {
         return;
       }
       for (let i = Math.min(localColumn, toColumn); i <= Math.max(localColumn, toColumn); i++) {
@@ -215,6 +257,10 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
         createTask={createTask}
       />
       {tasks}
+      <EditTaskPanel
+          taskObject={isEditTaskPanelOpen ? editedTask : {}}
+          editTaskObject={editCurrentLocalTaskObject}
+      />
     </div>
   );
 }
