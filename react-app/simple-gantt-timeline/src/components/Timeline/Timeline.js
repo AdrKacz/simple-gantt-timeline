@@ -74,7 +74,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           height={taskHeigh}
           paddingLeft={-Math.min(column, 0) * dayWidth}
           setName={(value) => (setEmptyTask({...emptyTask, Name:value}))}
-          updateTask={(side, clientX) => (updateLocalTask(item.Id, side, clientX))}
+          updateTask={(...args) => (updateLocalTask(item.Id, ...args))}
         />
       );
     };
@@ -125,11 +125,10 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     });
   }
 
-  function updateLocalTask(taskId, side, clientX) {
-    if (!taskId || !side || !clientX) {
+  function updateLocalTask(taskId, side, clientX, clientY) {
+    if (!taskId || !side || (!clientX && !clientY)) {
       return;
     }
-    // console.log("... Try to edit Local Task", taskId, side, clientX)
     let localTask;
     if (editedTask.Id === taskId) {
       localTask = {...editedTask};
@@ -143,17 +142,15 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     };
     const fromColumn = localStoreMapInfo[taskId].column;
     const toColumn = localStoreMapInfo[taskId].column + localStoreMapInfo[taskId].spread - 1;
-    const localRow = localStoreMapInfo[taskId].row;
-    // console.log("... With", localTask.Id, fromColumn, toColumn, localRow)
-    const localColumn = Math.floor((clientX - leftOrigin) / dayWidth);
-    // console.log("...With", localColumn, fromColumn, toColumn)
+    const currentRow = localStoreMapInfo[taskId].row;
 
     if (side === "left") {
+      const localColumn = Math.floor((clientX - leftOrigin - dayWidth / 2) / dayWidth);
       if (localColumn > toColumn) {
         return;
       }
       for (let i = Math.min(localColumn, fromColumn); i <= Math.max(localColumn, fromColumn); i++) {
-        if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {
+        if (timelineMap[`${i}:${currentRow}`] && timelineMap[`${i}:${currentRow}`] !== taskId) {
           return;
         };
       };
@@ -163,17 +160,39 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
       });
 
     } else if (side === "right") {
+      const localColumn = Math.floor((clientX - leftOrigin - dayWidth / 2) / dayWidth);
       if (localColumn < fromColumn) {
         return;
       }
       for (let i = Math.min(localColumn, toColumn); i <= Math.max(localColumn, toColumn); i++) {
-        if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {
+        if (timelineMap[`${i}:${currentRow}`] && timelineMap[`${i}:${currentRow}`] !== taskId) {
           return;
         };
       };
       setEditedTask({
         ...localTask,
         DueDate: new Date(localTask.DueDate.getTime() + (localColumn - toColumn) * 86400000),
+      });
+
+    } else if (side === "all") {
+      const localColumn = Math.floor((clientX - leftOrigin) / dayWidth);
+      const localRow = Math.floor((clientY - topOrigin) / taskHeigh);
+      const columnShift = Math.floor(localColumn - (toColumn + fromColumn) / 2);
+      if (localRow < 0 || columnShift === 0) {
+        return;
+      };
+      // Grab alway is the middle for now
+
+      for (let i = fromColumn + columnShift; i <= toColumn + columnShift; i++) {
+        if (timelineMap[`${i}:${localRow}`] && timelineMap[`${i}:${localRow}`] !== taskId) {
+          return;
+        };
+      };
+      setEditedTask({
+        ...localTask,
+        StartDate: new Date(localTask.StartDate.getTime() + columnShift * 86400000),
+        DueDate: new Date(localTask.DueDate.getTime() + columnShift * 86400000),
+        row: localRow,
       });
     };
 

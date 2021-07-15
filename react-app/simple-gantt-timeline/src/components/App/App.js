@@ -11,7 +11,7 @@ import {
 
 import getStoreWithRow from "../../helpers/getStoreWithRow";
 
-import MockDatabase from "../../store/mock-database.js";
+import MockDatabase from "../../store/mock-database";
 
 import './App.css';
 

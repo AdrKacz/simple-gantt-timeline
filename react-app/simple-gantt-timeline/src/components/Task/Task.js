@@ -1,24 +1,32 @@
 // TODO: Center text vertically
-// TODO: CHange layout to add transparent padding
+// TODO: Change layout to add transparent padding
+
+import { useEffect } from "react";
 
 import TaskHandle from "../TaskHandle/TaskHandle";
+
+import useMousePosition from "../../hooks/useMousePosition";
 
 import './Task.css';
 
 function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask}) {
-  function handleClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  const [clientX, clientY,setIsListening] = useMousePosition(taskKey);
+
+  function handleMouseDown(e) {
+    setIsListening(true);
   };
 
   function updateTaskHandleSide(side, clientX) {
-    updateTask(side, clientX)
-  }
+    updateTask(side, clientX, 0);
+  };
+
+  useEffect(() => {
+    updateTask("all", clientX, clientY);
+  }, [clientX, clientY, updateTask])
 
   return (
     <div
       className="Task"
-      onClick={handleClick}
       style={{
         top: absoluteTop,
         left: absoluteLeft,
@@ -34,6 +42,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
       />
       <div
         className="text-container"
+        onMouseDown={handleMouseDown}
         style={{
           "padding-left": paddingLeft, // NOTE: Trigger an error for no reason
         }}

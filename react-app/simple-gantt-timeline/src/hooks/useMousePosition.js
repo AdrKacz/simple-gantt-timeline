@@ -1,4 +1,10 @@
+// TODO: Optmise handler to not update at every frame
+
 import { useState, useEffect, useCallback } from "react";
+
+// import {
+//   MINIMUM_SQUARED_DETECTION_RADIUS
+// } from "../constants/constants"
 
 let listeningCounter = 0;
 const eventTargets = {};
@@ -17,6 +23,9 @@ function mouseUpHandler() {
   });
 };
 
+// function squaredDistance(pointA, pointB) {
+//   return ((pointA[0] - pointB[0]) ** 2 + (pointA[1] - pointB[1]) ** 2)
+// }
 
 function useMousePosition(targetKey) {
   eventTargets[targetKey] = eventTargets[targetKey] ?? new EventTarget();
@@ -24,7 +33,7 @@ function useMousePosition(targetKey) {
 
   // console.table(listenTargets);
 
-  const [offset, setOffset] = useState([undefined, undefined]);
+  const [offset, setOffset] = useState([0, 0]);
 
   function setIsListening(isListening) {
     listenTargets[targetKey] = isListening;
@@ -32,8 +41,9 @@ function useMousePosition(targetKey) {
 
   const memoizedUpdatePositionHandler = useCallback(
     (e) => {
+      const touchPoint = [e.detail.x, e.detail.y]
       if (listenTargets[targetKey]) {
-        setOffset([e.detail.x, e.detail.y]);
+        setOffset(touchPoint);
       };
     },
     [targetKey],
@@ -63,7 +73,11 @@ function useMousePosition(targetKey) {
     };
   }, [targetKey, memoizedUpdatePositionHandler]);
 
-  return [listenTargets[targetKey] ? offset[0] : undefined, setIsListening];
+  return [
+    listenTargets[targetKey] ? offset[0] : undefined,
+    listenTargets[targetKey] ? offset[1] : undefined,
+    setIsListening
+  ];
 }
 
 export default useMousePosition;
