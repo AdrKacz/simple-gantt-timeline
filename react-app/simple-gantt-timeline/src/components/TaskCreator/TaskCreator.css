@@ -7,3 +7,7 @@ div.TaskCreator {
 
   cursor: cell;
 }
+
+div.TaskCreator:active {
+  outline: none;
+}

@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Slider from "../Slider/Slider";
 import TimeAxis from "../TimeAxis/TimeAxis";
 import Timeline from "../Timeline/Timeline";
+import Spinner from "../Spinner/Spinner";
 
 import {
   DAY_WIDTH,
   TASK_HEIGHT,
-} from "../../constants/constants"
+} from "../../constants/constants";
+
+// import useStore from "../../store/useStore";
+import {
+fetchStore,
+updateStore
+} from "../../store/useStore";
 
 import getStoreWithRow from "../../helpers/getStoreWithRow";
 
@@ -16,8 +23,66 @@ import MockDatabase from "../../store/mock-database";
 import './App.css';
 
 function App() {
-  // localStore to be remove if use real endpoint
-  const [localStore, setLocalStore] = useState(getStoreWithRow(MockDatabase));
+  // TODO: useStore hook
+  const [store, setStore] = useState(null);
+  const [updateStoreWith, setUpdateStoreWith] = useState(null);
+
+  // Fetch
+  useEffect(() => {
+    let isMounted = true;
+    fetchStore().then(response => {
+      // Avoid updating state if the component unmounted before the fetch completes
+      if (!isMounted) {
+        return;
+      }
+      const data = response.result;
+      console.count("... Receive Data");
+      console.log(data);
+      setStore(getStoreWithRow(data.Items));
+    }).catch(err => {
+      console.error(err);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [])
+
+  // Update
+  useEffect(() => {
+    if (updateStoreWith === null) {
+      return;
+    };
+    // Has something to update
+    let isMounted = true;
+    updateStore(updateStoreWith).then(response => {
+      // Avoid updating state if the component unmounted before the fetch completes
+      if (!isMounted) {
+        return;
+      }
+      const data = response.result;
+      console.count("... Update Data");
+      console.log(data);
+    }).then((_) => {
+      return fetchStore();
+    }).then(response => {
+      // Avoid updating state if the component unmounted before the fetch completes
+      if (!isMounted) {
+        return;
+      }
+      const data = response.result;
+      console.count("... Receive Data");
+      console.log(data);
+      setStore(getStoreWithRow(data.Items));
+    }).catch(err => {
+      console.error(err);
+    });
+
+    return () => {
+      isMounted = false;
+    }
+  }, [updateStoreWith]);
+
 
   const [fromDate, setFromDate] = useState(new Date(Date.now() - 7 * 86400000))
 
@@ -33,10 +98,8 @@ function App() {
       return;
     };
 
-    setLocalStore({
-      ...localStore,
-      [task.Id]: {...task},
-    });
+    setUpdateStoreWith({...task});
+    setStore(null); // to avoid display false informaiton, have to be improved
   }
 
   return (
@@ -53,16 +116,19 @@ function App() {
         dayOrigin={fromDate}
         height={TASK_HEIGHT}
       />
-      <Timeline
-        fromDate={fromDate}
-        topOrigin={topOrigin + 2 * TASK_HEIGHT}
-        leftOrigin={leftOrigin}
-        maxSpread={maxSpread}
-        dayWidth={DAY_WIDTH}
-        taskHeigh={TASK_HEIGHT}
-        store={Object.values(localStore)}
-        editStoreTask={editTask}
-      />
+      {store !== null ?
+        <Timeline
+          fromDate={fromDate}
+          topOrigin={topOrigin + 2 * TASK_HEIGHT}
+          leftOrigin={leftOrigin}
+          maxSpread={maxSpread}
+          dayWidth={DAY_WIDTH}
+          taskHeigh={TASK_HEIGHT}
+          store={store}
+          editStoreTask={editTask}
+        /> :
+        <Spinner />
+      }
     </div>
   );
 }

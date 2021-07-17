@@ -1,0 +1,24 @@
+div.Spinner {
+  animation: 1.5s linear infinite spinner;
+  animation-play-state: inherit;
+  border: solid 1vw var(--color-button-icon-secondary);
+  border-bottom-color: var(--color-button-background-secondary);
+  border-radius: 50%;
+  content: "";
+  height: 10vw;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 10vw;
+  will-change: transform;
+}
+
+@keyframes spinner {
+  0% {
+    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) rotate(360deg);
+  }
+}

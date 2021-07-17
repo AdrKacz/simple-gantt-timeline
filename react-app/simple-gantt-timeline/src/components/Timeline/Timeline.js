@@ -115,7 +115,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
       return;
     };
 
-    const taskId = Date.now()
+    const taskId = Date.now().toString();
     editStoreTask({...emptyTask, Id: taskId});
   }
 

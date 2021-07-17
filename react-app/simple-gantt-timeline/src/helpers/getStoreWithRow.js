@@ -4,12 +4,16 @@ import {
   DEPTH_LIMIT,
 } from "../constants/constants"
 
+// Receive a list a return a list
 function getStoreWithRow(store) {
-  const storeWithRow = {};
+  const storeWithRow = [];
 
   const storeMap = {};
 
-  Object.values(store).forEach((item, i) => {
+  store.forEach((item, i) => {
+    // Convert date
+    item.StartDate = new Date(item.StartDate);
+    item.DueDate = new Date(item.DueDate);
     // Get offset and spread
     const dayOffset = getDaySpread(new Date(), item.StartDate);
     const spread = getDaySpread(item.StartDate, item.DueDate) + 1;
@@ -53,10 +57,10 @@ function getStoreWithRow(store) {
     };
 
     // Populate store with row
-    storeWithRow[item.Id] = {
+    storeWithRow.push( {
       ...item,
       row: row,
-    };
+    });
   });
 
   return storeWithRow;
