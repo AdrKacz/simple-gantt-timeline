@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Slider from "../Slider/Slider";
 import TimeAxis from "../TimeAxis/TimeAxis";
@@ -10,79 +10,13 @@ import {
   TASK_HEIGHT,
 } from "../../constants/constants";
 
-// import useStore from "../../store/useStore";
-import {
-fetchStore,
-updateStore
-} from "../../store/useStore";
-
-import getStoreWithRow from "../../helpers/getStoreWithRow";
-
-import MockDatabase from "../../store/mock-database";
+import useStore from "../../store/useStore";
 
 import './App.css';
 
 function App() {
   // TODO: useStore hook
-  const [store, setStore] = useState(null);
-  const [updateStoreWith, setUpdateStoreWith] = useState(null);
-
-  // Fetch
-  useEffect(() => {
-    let isMounted = true;
-    fetchStore().then(response => {
-      // Avoid updating state if the component unmounted before the fetch completes
-      if (!isMounted) {
-        return;
-      }
-      const data = response.result;
-      console.count("... Receive Data");
-      console.log(data);
-      setStore(getStoreWithRow(data.Items));
-    }).catch(err => {
-      console.error(err);
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [])
-
-  // Update
-  useEffect(() => {
-    if (updateStoreWith === null) {
-      return;
-    };
-    // Has something to update
-    let isMounted = true;
-    updateStore(updateStoreWith).then(response => {
-      // Avoid updating state if the component unmounted before the fetch completes
-      if (!isMounted) {
-        return;
-      }
-      const data = response.result;
-      console.count("... Update Data");
-      console.log(data);
-    }).then((_) => {
-      return fetchStore();
-    }).then(response => {
-      // Avoid updating state if the component unmounted before the fetch completes
-      if (!isMounted) {
-        return;
-      }
-      const data = response.result;
-      console.count("... Receive Data");
-      console.log(data);
-      setStore(getStoreWithRow(data.Items));
-    }).catch(err => {
-      console.error(err);
-    });
-
-    return () => {
-      isMounted = false;
-    }
-  }, [updateStoreWith]);
-
+  const [store, setUpdateStoreWith, registration] = useStore();
 
   const [fromDate, setFromDate] = useState(new Date(Date.now() - 7 * 86400000))
 
@@ -99,7 +33,6 @@ function App() {
     };
 
     setUpdateStoreWith({...task});
-    setStore(null); // to avoid display false informaiton, have to be improved
   }
 
   return (
@@ -129,6 +62,7 @@ function App() {
         /> :
         <Spinner />
       }
+      {registration.hasToRegister && registration.registrationComponent}
     </div>
   );
 }
