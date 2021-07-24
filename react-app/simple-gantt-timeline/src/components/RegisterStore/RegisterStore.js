@@ -69,7 +69,7 @@ function RegisterStore({registrationOptions, submitOptions}) {
       <span>
       Don't have a database?
       </span>
-      <a href="https://www.google.com" target="_blank" rel="noreferrer">
+      <a href="https://github.com/AdrKacz/simple-gantt-timeline/blob/main/aws/README.md" target="_blank" rel="noreferrer">
       Create your database
       </a>
     </div>
