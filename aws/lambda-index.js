@@ -50,13 +50,13 @@ exports.handler = (event, context, callback) => {
 
 function scanAllDocuments() {
   return ddb.scan({
-    TableName: 'MyTable',
+    TableName: process.env.TABLE_NAME,
   }).promise();
 }
 
 function updateDocument(item) {
   return ddb.put({
-    TableName: 'MyTable',
+    TableName: process.env.TABLE_NAME,
     Item: item,
   }).promise();
 }

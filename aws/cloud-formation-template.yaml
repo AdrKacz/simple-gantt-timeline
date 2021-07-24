@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: Id
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+      - AttributeName: Id
+        KeyType: HASH
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs12.x
+      Role: !GetAtt IAMRole.Arn
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          const AWS=require("aws-sdk"),ddb=new AWS.DynamoDB.DocumentClient;function scanAllDocuments(){return ddb.scan({TableName:process.env.TABLE_NAME}).promise()}function updateDocument(e){return ddb.put({TableName:process.env.TABLE_NAME,Item:e}).promise()}function errorResponse(e,o,n){n(null,{statusCode:500,body:JSON.stringify({Error:e,Reference:o}),headers:{"Access-Control-Allow-Origin":"*"}})}exports.handler=((e,o,n)=>{console.log("... Receive Event"),console.log(e);const s=JSON.parse(e.body),t=s.action;let r;"scan"===t?r=scanAllDocuments():"update"===t?r=updateDocument(s.item):errorResponse("Action not found",o.awsRequestId,n),r.then(e=>{n(null,{statusCode:200,body:JSON.stringify({action:t,result:e}),headers:{"Access-Control-Allow-Origin":"*"}})}).catch(e=>{console.error(e),errorResponse(e.message,o.awsRequestId,n)})});
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+  IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub LambdaPolicyFor${DynamoDBTable}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+            - Sid: VisualEditor0
+              Effect: Allow
+              Action: dynamodb:*
+              Resource: !GetAtt DynamoDBTable.Arn
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayApi}/$default/$default
+  ApiGatewayApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub API-for-${DynamoDBTable}
+      Description: HTTP API for DynamoDB Table Lambda
+      ProtocolType: HTTP
+      Target: !GetAtt LambdaFunction.Arn
+Outputs:
+  InvokeURL:
+    Value: !Sub https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com
