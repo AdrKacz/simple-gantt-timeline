@@ -1,0 +1,5 @@
+div.DragDependency {
+  position: absolute;
+
+  background-color: var(--color-button-icon-secondary);
+}

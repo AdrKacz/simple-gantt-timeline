@@ -12,3 +12,6 @@ export const DEPTH_LIMIT = 100;
 
 // For useMousePosition (don't work, maximum death update when trying to reduce the number of update ...)
 export const MINIMUM_SQUARED_DETECTION_RADIUS = 100 ** 2;
+
+// For DragDependency
+export const DRAG_SIZE = 20;

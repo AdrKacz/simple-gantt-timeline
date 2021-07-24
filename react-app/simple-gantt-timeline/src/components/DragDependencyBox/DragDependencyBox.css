@@ -1,0 +1,9 @@
+div.DragDependencyBox {
+  position: absolute;
+  width: 0.5vw;
+  height: 0.5vw;
+  transform: translate3d(-50%, -50%, 0);
+  border-radius: 50%;
+
+  background-color: var(--color-button-icon-secondary);
+}

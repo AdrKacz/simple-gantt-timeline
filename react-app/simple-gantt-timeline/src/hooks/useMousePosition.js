@@ -18,8 +18,12 @@ function positionHandler({clientX, clientY}) {
 };
 
 function mouseUpHandler() {
+  const localMouseUpEvent = new Event("localmouseup")
   Object.keys(listenTargets).forEach((key, _) => {
     listenTargets[key] = false;
+  });
+  Object.values(eventTargets).forEach((item, _) => {
+    item.dispatchEvent(localMouseUpEvent);
   });
 };
 
@@ -49,6 +53,13 @@ function useMousePosition(targetKey) {
     [targetKey],
   );
 
+  const memoizedMouseUpHandler = useCallback(
+    (e) => {
+      setOffset([undefined, undefined]);
+    },
+    [],
+  );
+
   useEffect(() => {
     // Attach global listener to window
     if (listeningCounter === 0) {
@@ -57,11 +68,13 @@ function useMousePosition(targetKey) {
     };
     // Send update to local listener if any
     eventTargets[targetKey].addEventListener("updateposition", memoizedUpdatePositionHandler);
+    eventTargets[targetKey].addEventListener("localmouseup", memoizedMouseUpHandler);
 
     listeningCounter += 1; // How many component are listening to mouse position
     return () => {
       // Remove update to local listener if any
       eventTargets[targetKey].removeEventListener("updateposition", memoizedUpdatePositionHandler);
+      eventTargets[targetKey].removeEventListener("localmouseup", memoizedMouseUpHandler);
 
       listeningCounter -= 1; // How many component are listening to mouse position
 
@@ -71,11 +84,15 @@ function useMousePosition(targetKey) {
         window.removeEventListener("mouseup", mouseUpHandler);
       };
     };
-  }, [targetKey, memoizedUpdatePositionHandler]);
+  }, [targetKey, memoizedUpdatePositionHandler, memoizedMouseUpHandler]);
 
+  if (targetKey==="task1:drag") {
+    console.log(listenTargets[targetKey],  offset[0],  offset[1] )
+  }
   return [
     listenTargets[targetKey] ? offset[0] : undefined,
     listenTargets[targetKey] ? offset[1] : undefined,
+    listenTargets[targetKey],
     setIsListening,
   ];
 }
