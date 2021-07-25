@@ -34,7 +34,7 @@ function App() {
 
     setUpdateStoreWith({...task});
   }
-
+  console.log("Store is:", store);
   return (
     <div className="App">
       <Slider

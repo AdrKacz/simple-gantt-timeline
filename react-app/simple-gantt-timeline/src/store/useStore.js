@@ -106,8 +106,8 @@ function useStore() {
         return;
       }
       const data = response.result;
-      console.count("... Receive Data");
-      console.log(data);
+      // console.count("... Receive Data");
+      // console.log(data);
       setStore(getStoreWithRow(data.Items));
     }).catch(err => {
       console.error(err);
@@ -134,9 +134,9 @@ function useStore() {
       if (!isMounted) {
         return;
       }
-      const data = response.result;
-      console.count("... Update Data");
-      console.log(data);
+      // const data = response.result;
+      // console.count("... Update Data");
+      // console.log(data);
     }).then((_) => {
       return storeFunctions[registrationInformation.storeType].fetch(registrationInformation);
     }).then(response => {
@@ -145,8 +145,8 @@ function useStore() {
         return;
       }
       const data = response.result;
-      console.count("... Receive Data");
-      console.log(data);
+      // console.count("... Receive Data");
+      // console.log(data);
       setStore(getStoreWithRow(data.Items));
     }).catch(err => {
       console.error(err);

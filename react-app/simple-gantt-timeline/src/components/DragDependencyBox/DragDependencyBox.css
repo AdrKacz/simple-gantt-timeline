@@ -6,4 +6,7 @@ div.DragDependencyBox {
   border-radius: 50%;
 
   background-color: var(--color-button-icon-secondary);
+
+  /* Needed to not capture mouse event */
+  pointer-events: none;
 }

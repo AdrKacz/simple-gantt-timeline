@@ -5,16 +5,14 @@ import { useState, useEffect } from "react";
 
 import TaskHandle from "../TaskHandle/TaskHandle";
 import DragDependency from "../DragDependency/DragDependency";
-import DragDependencyBox from "../DragDependencyBox/DragDependencyBox";
 
 import useMousePosition from "../../hooks/useMousePosition";
 
 import './Task.css';
 
-function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask, launchEditTaskObject}) {
+function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, taskKey, updateTask, launchEditTaskObject, setIsDrag, askForDependencyIfDrag}) {
   const [clientX, clientY, isListening, setIsListening] = useMousePosition(taskKey);
 
-  const [dragX, dragY, isDrag, setIsDrag] = useMousePosition(`${taskKey}:drag`);
   const [displayDragDependencies, setDisplayDragDependencies] = useState(false);
 
   function handleMouseDown(e) {
@@ -22,11 +20,16 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
     setIsListening(true);
   };
 
-  function handleMouseDownDragDependency(e) {
-    setIsDrag(true);
+  function handleMouseDownDragDependencyFrom(e) {
+    setIsDrag("from");
+  };
+
+  function handleMouseDownDragDependencyTo(e) {
+    setIsDrag("to");
   };
 
   function handleMouseEnter(e) {
+    console.log("Mouse Enter", name, "Is Listening?", isListening)
     if (isListening) {
       return;
     };
@@ -40,13 +43,17 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
     setDisplayDragDependencies(false);
   };
 
+  function handleMouseUp(e) {
+    askForDependencyIfDrag()
+  }
+
   function updateTaskHandleSide(side, clientX) {
     updateTask(side, clientX, 0);
   };
 
   function handleClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    // e.preventDefault();
+    // e.stopPropagation();
 
     launchEditTaskObject();
   }
@@ -56,12 +63,12 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
   }, [clientX, clientY, updateTask])
 
   return (
-    <>
     <div
       className="Task"
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onMouseUp={handleMouseUp}
       style={{
         top: absoluteTop,
         left: absoluteLeft,
@@ -91,12 +98,12 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
             originAnchor
             width={width}
             height={height}
-            handleMouseDown={handleMouseDownDragDependency}
+            handleMouseDown={handleMouseDownDragDependencyFrom}
           />
           <DragDependency
             width={width}
             height={height}
-            handleMouseDown={handleMouseDownDragDependency}
+            handleMouseDown={handleMouseDownDragDependencyTo}
           />
         </>
       )}
@@ -107,13 +114,6 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
         updateTaskHandle={(clientX) => (updateTaskHandleSide("right", clientX))}
       />
     </div>
-    {isDrag && (
-      <DragDependencyBox
-        positionX={dragX}
-        positionY={dragY}
-      />
-    )}
-    </>
   );
 }
 

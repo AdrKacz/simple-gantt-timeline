@@ -7,6 +7,9 @@ import Task from "../Task/Task";
 import EmptyTask from "../EmptyTask/EmptyTask";
 import TaskCreator from "../TaskCreator/TaskCreator";
 import EditTaskPanel from "../EditTaskPanel/EditTaskPanel";
+import DragDependencyBox from "../DragDependencyBox/DragDependencyBox";
+
+import useMousePosition from "../../hooks/useMousePosition";
 
 import './Timeline.css';
 
@@ -32,6 +35,9 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
 
   const [isEditTaskPanelOpen, setIsEditTaskPanelOpen] = useState(false);
 
+  const [dragX, dragY, isDrag, setIsDrag] = useMousePosition(`dragdependency`);
+  const [dependencyCouple, setDependencyCouple] = useState({from:undefined, to:undefined});
+
   const dayOrigin = new Date(fromDate.getTime());
   const timelineMap = {};
   const localStoreMapInfo = {}
@@ -47,6 +53,39 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
   if (emptyTask.StartDate && emptyTask.DueDate) {
     placeTask(emptyTask, EmptyTask);
   };
+
+  function handleIsDragBy(taskId, origin) {
+    if (origin !== "from" && origin !== "to") { // only handle endpoints origin
+      return;
+    };
+
+    setDependencyCouple({
+      ...dependencyCouple,
+      [origin]: taskId
+    });
+    setIsDrag(true)
+  };
+
+  function handleAskForDependencyIfDrag(taskdId) {
+    let fromTask;
+    let toTaskId;
+    if (dependencyCouple.from) { // receive to
+      fromTask = findTask(dependencyCouple.from);
+      toTaskId = taskdId;
+    } else if (dependencyCouple.to) { // receive from
+      fromTask = findTask(taskdId);
+      toTaskId = dependencyCouple.to;
+    }
+
+    console.log("Update Dependency", fromTask, toTaskId)
+    if (fromTask && toTaskId && fromTask.Id !== toTaskId) {
+      editStoreTask({
+        ...fromTask,
+        linkedTo: (fromTask.linkedTo ?? new Set()).add(toTaskId)
+      });
+    }
+    setDependencyCouple({from: undefined, to: undefined});
+  }
 
   function findTask(taskId) {
     let localTask;
@@ -95,6 +134,8 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           setName={(value) => (setEmptyTask({...emptyTask, Name:value}))}
           updateTask={(...args) => (updateLocalTask(item.Id, ...args))}
           launchEditTaskObject={() => (launchEditLocalTaskObject(item.Id))}
+          setIsDrag={(origin) => (handleIsDragBy(item.Id, origin))}
+          askForDependencyIfDrag={() => (handleAskForDependencyIfDrag(item.Id))}
         />
       );
     };
@@ -261,6 +302,12 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           taskObject={isEditTaskPanelOpen ? editedTask : {}}
           editTaskObject={editCurrentLocalTaskObject}
       />
+      {isDrag && (
+        <DragDependencyBox
+          positionX={dragX}
+          positionY={dragY}
+        />
+      )}
     </div>
   );
 }
