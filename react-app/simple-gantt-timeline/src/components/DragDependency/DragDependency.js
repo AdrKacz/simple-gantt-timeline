@@ -8,7 +8,7 @@ function DragDependency({originAnchor, width, height, handleMouseDown}) {
   const positionStyle = {
     width: DRAG_SIZE,
     height: DRAG_SIZE,
-    bottom: height,
+    bottom: height - DRAG_SIZE * 0.1,
   }
 
   if (originAnchor) {
