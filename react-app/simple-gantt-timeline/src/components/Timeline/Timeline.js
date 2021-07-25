@@ -1,7 +1,7 @@
 // TODO: Anchor point for Timeline with dynamic position
 // TODO: Get Dynamic Window width for TimeAxis (WINDOW_WIDTH)
 // NOTE: Dynamic Constant
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 import Xarrow from "react-xarrows";
 
