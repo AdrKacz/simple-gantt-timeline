@@ -5,3 +5,24 @@ div.Timeline div {
 div.Timeline {
 
 }
+
+/* Xarray styling */
+
+div.Timeline svg > path {
+  stroke: var(--color-icon);
+  transition: stroke 200ms;
+}
+
+div.Timeline svg:hover > path {
+  stroke: var(--color-selected-border);
+}
+
+
+div.Timeline svg > g {
+  fill: var(--color-icon);
+  transition: fill 200ms;
+}
+
+div.Timeline svg:hover > g {
+  fill: var(--color-selected-border);
+}

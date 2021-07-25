@@ -1,7 +1,9 @@
 // TODO: Anchor point for Timeline with dynamic position
 // TODO: Get Dynamic Window width for TimeAxis (WINDOW_WIDTH)
 // NOTE: Dynamic Constant
-import { useState } from "react";
+import { useState, useRef } from "react";
+
+import Xarrow from "react-xarrows";
 
 import Task from "../Task/Task";
 import EmptyTask from "../EmptyTask/EmptyTask";
@@ -42,6 +44,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
   const timelineMap = {};
   const localStoreMapInfo = {}
   const tasks = [];
+  const dependencies = [];
 
   store.forEach((item, _) => {
     if (editedTask.Id === item.Id) {
@@ -77,7 +80,6 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
       toTaskId = dependencyCouple.to;
     }
 
-    console.log("Update Dependency", fromTask, toTaskId)
     if (fromTask && toTaskId && fromTask.Id !== toTaskId) {
       editStoreTask({
         ...fromTask,
@@ -138,7 +140,27 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           askForDependencyIfDrag={() => (handleAskForDependencyIfDrag(item.Id))}
         />
       );
+
+      // Add dependencies if any
+      if (item.linkedTo && item.Id !== editedTask.Id)  {
+        placeDependencies(item.Id, item.linkedTo)
+      }
     };
+  }
+
+  function placeDependencies(fromId, toIds) {
+    toIds.forEach((toId, _) => {
+      if (toId !== editedTask.Id) {
+        dependencies.push(
+          <Xarrow
+            start={`Task-${fromId}`}
+            end={`Task-${toId}`}
+            curveness={0.5}
+            strokeWidth={3}
+          />
+        )
+      }
+    })
   }
 
   function validateEditedTask() {
@@ -298,6 +320,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
         createTask={createTask}
       />
       {tasks}
+      {dependencies}
       <EditTaskPanel
           taskObject={isEditTaskPanelOpen ? editedTask : {}}
           editTaskObject={editCurrentLocalTaskObject}

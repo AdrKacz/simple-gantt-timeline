@@ -64,6 +64,7 @@ function Task({name, absoluteTop, absoluteLeft, width, height, paddingLeft, task
 
   return (
     <div
+      id={taskKey}
       className="Task"
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
