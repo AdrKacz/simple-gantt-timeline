@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/simple-gantt-timeline/static/css/main.f041bdd9.chunk.css",
-    "main.js": "/simple-gantt-timeline/static/js/main.83bfa8c0.chunk.js",
-    "main.js.map": "/simple-gantt-timeline/static/js/main.83bfa8c0.chunk.js.map",
-    "runtime-main.js": "/simple-gantt-timeline/static/js/runtime-main.0b4a949a.js",
-    "runtime-main.js.map": "/simple-gantt-timeline/static/js/runtime-main.0b4a949a.js.map",
-    "static/js/2.ddd5776c.chunk.js": "/simple-gantt-timeline/static/js/2.ddd5776c.chunk.js",
-    "static/js/2.ddd5776c.chunk.js.map": "/simple-gantt-timeline/static/js/2.ddd5776c.chunk.js.map",
-    "static/js/3.cec38ba3.chunk.js": "/simple-gantt-timeline/static/js/3.cec38ba3.chunk.js",
-    "static/js/3.cec38ba3.chunk.js.map": "/simple-gantt-timeline/static/js/3.cec38ba3.chunk.js.map",
+    "main.css": "/simple-gantt-timeline/static/css/main.8bce5eec.chunk.css",
+    "main.js": "/simple-gantt-timeline/static/js/main.8dabe9ab.chunk.js",
+    "main.js.map": "/simple-gantt-timeline/static/js/main.8dabe9ab.chunk.js.map",
+    "runtime-main.js": "/simple-gantt-timeline/static/js/runtime-main.3fa01d4f.js",
+    "runtime-main.js.map": "/simple-gantt-timeline/static/js/runtime-main.3fa01d4f.js.map",
+    "static/js/2.70bb89bc.chunk.js": "/simple-gantt-timeline/static/js/2.70bb89bc.chunk.js",
+    "static/js/2.70bb89bc.chunk.js.map": "/simple-gantt-timeline/static/js/2.70bb89bc.chunk.js.map",
+    "static/js/3.0a1b2bf9.chunk.js": "/simple-gantt-timeline/static/js/3.0a1b2bf9.chunk.js",
+    "static/js/3.0a1b2bf9.chunk.js.map": "/simple-gantt-timeline/static/js/3.0a1b2bf9.chunk.js.map",
     "index.html": "/simple-gantt-timeline/index.html",
-    "static/css/main.f041bdd9.chunk.css.map": "/simple-gantt-timeline/static/css/main.f041bdd9.chunk.css.map",
-    "static/js/2.ddd5776c.chunk.js.LICENSE.txt": "/simple-gantt-timeline/static/js/2.ddd5776c.chunk.js.LICENSE.txt"
+    "static/css/main.8bce5eec.chunk.css.map": "/simple-gantt-timeline/static/css/main.8bce5eec.chunk.css.map",
+    "static/js/2.70bb89bc.chunk.js.LICENSE.txt": "/simple-gantt-timeline/static/js/2.70bb89bc.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.0b4a949a.js",
-    "static/js/2.ddd5776c.chunk.js",
-    "static/css/main.f041bdd9.chunk.css",
-    "static/js/main.83bfa8c0.chunk.js"
+    "static/js/runtime-main.3fa01d4f.js",
+    "static/js/2.70bb89bc.chunk.js",
+    "static/css/main.8bce5eec.chunk.css",
+    "static/js/main.8dabe9ab.chunk.js"
   ]
 }
