@@ -33,6 +33,7 @@ function RegisterStore({registrationOptions, submitOptions}) {
   const optionsToSelect = Object.entries(registrationOptions).map(([key, value], i) => (
     {value: key, label: value.label}
   ))
+
   return (
     <div
       className="RegisterStore"

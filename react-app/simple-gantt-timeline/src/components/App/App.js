@@ -16,7 +16,7 @@ import './App.css';
 
 function App() {
   // TODO: useStore hook
-  const [store, setUpdateStoreWith, registration] = useStore();
+  const [store, setUpdateStoreWith, deleteStoreItem, registration] = useStore();
 
   const [fromDate, setFromDate] = useState(new Date(Date.now() - 7 * 86400000))
 
@@ -32,9 +32,25 @@ function App() {
       return;
     };
 
-    setUpdateStoreWith({...task});
+    setUpdateStoreWith([{...task}]);
   }
-  console.log("Store is:", store);
+
+  function editMultipleTasks(tasks) {
+    // Do nothing if task not valid
+    for (let i = 0; i < tasks.length; i++) {
+      if (!tasks[i].Id || !tasks[i].Name || !tasks[i].StartDate || !tasks[i].DueDate) {
+        return;
+      };
+    }
+
+    setUpdateStoreWith(tasks);
+  }
+
+  function deleteTask(task) {
+    deleteStoreItem([{...task}])
+  }
+  console.log("Store is:");
+  console.table(store);
   return (
     <div className="App">
       <Slider
@@ -59,6 +75,8 @@ function App() {
           taskHeigh={TASK_HEIGHT}
           store={store}
           editStoreTask={editTask}
+          editMultipleStoreTasks={editMultipleTasks}
+          deleteStoreTask={deleteTask}
         /> :
         <Spinner />
       }

@@ -19,10 +19,31 @@ export async function fetchStore(_) {
   return await response;
 }
 
-export async function updateStore(_, item) {
+export async function updateStore(_, items) {
   // TODO: Check if Id is valid
   const response = new Promise((resolve, reject) => {
-    localStore[item.Id] = {...item};
+    items.forEach((item, i) => {
+      localStore[item.Id] = {...item};
+    });
+    resolve({
+      result: {}
+    });
+  });
+
+  return await response;
+}
+
+export async function deleteItems(_, items) {
+  // TODO: Check if Id is valid
+  const response = new Promise((resolve, reject) => {
+    items.forEach((item, i) => {
+      if (item.linkedFrom) {
+        item.linkedFrom.forEach((itemId, i) => {
+          localStore[itemId].linkedTo.delete(item.Id);
+        });
+      }
+      delete localStore[item.Id];
+    });
     resolve({
       result: {}
     });

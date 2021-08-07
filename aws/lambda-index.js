@@ -8,6 +8,10 @@ exports.handler = (event, context, callback) => {
   // In order to extract meaningful values, we need to first parse this string
   // into an object. A more robust implementation might inspect the Content-Type
   // header first and use a different parsing strategy based on that value.
+  if (!event.body) {
+    errorResponse('No body found', context.awsRequestId, callback)
+  };
+  
   const requestBody = JSON.parse(event.body);
 
   const action = requestBody.action;

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import getStoreWithRow from "../helpers/getStoreWithRow";
 
+// Local functions
 import {
   fetchStore as fetchLocalStore,
   updateStore as updateLocalStore,
+  deleteItems as deleteLocalItems,
   registrationInformation as registrationLocalInformation
 } from "./LocalStore"
 
@@ -22,17 +24,31 @@ async function fetchAWSStore(information) {
   return await response.json();
 }
 
-async function updateAWSStore(information, item) {
+async function updateAWSStore(information, items) {
 
   const response = await fetch(information.apiEndpoint, {
     method: 'POST',
     body: JSON.stringify({
       action: 'update',
-      item: {
+      items: items.map((item, i) => ({
         ...item,
         StartDate: new Date(item.StartDate).toISOString(),
         DueDate: new Date(item.DueDate).toISOString(),
-      }
+      }))
+
+    }),
+  });
+
+  return await response.json();
+}
+
+async function deleteAWSItems(information, items) {
+
+  const response = await fetch(information.apiEndpoint, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'delete',
+      item: items
     }),
   });
 
@@ -45,11 +61,13 @@ const registrationAWSInformation = {apiEndpoint: "url"};
 const storeFunctions = {
   'aws': {
     'fetch': fetchAWSStore,
-    'update': updateAWSStore
+    'update': updateAWSStore,
+    'delete': deleteAWSItems,
   },
   'local': {
     'fetch': fetchLocalStore,
-    'update': updateLocalStore
+    'update': updateLocalStore,
+    'delete': deleteLocalItems,
   }
 };
 
@@ -79,10 +97,17 @@ function useStore() {
   const [registrationInformation, setRegistrationInformation] = useState({})
   const [store, setStore] = useState(null);
   const [localUpdateStoreWith, setLocalUpdateStoreWith] = useState(null);
+  const [localDeleteItemsWith, setLocalDeleteItemsWith] = useState(null);
 
   // Update function
-  function setUpdateStoreWith(item) {
-    setLocalUpdateStoreWith(item);
+  function setUpdateStoreWith(items) {
+    setLocalUpdateStoreWith(items);
+    setStore(null); // to avoid display false information, have to be improved
+  }
+
+  // Update function
+  function setDeleteItemWith(items) {
+    setLocalDeleteItemsWith(items);
     setStore(null); // to avoid display false information, have to be improved
   }
 
@@ -157,9 +182,49 @@ function useStore() {
     }
   }, [registrationInformation, localUpdateStoreWith]);
 
+  // Delete
+  useEffect(() => {
+    if (!registrationInformation.storeType) { // security update
+      return;
+    }
+
+    if (localDeleteItemsWith === null) {
+      return;
+    };
+    // Has something to update
+    let isMounted = true;
+    storeFunctions[registrationInformation.storeType].delete(registrationInformation, localDeleteItemsWith).then(response => {
+      // Avoid updating state if the component unmounted before the fetch completes
+      if (!isMounted) {
+        return;
+      }
+      // const data = response.result;
+      // console.count("... Update Data");
+      // console.log(data);
+    }).then((_) => {
+      return storeFunctions[registrationInformation.storeType].fetch(registrationInformation);
+    }).then(response => {
+      // Avoid updating state if the component unmounted before the fetch completes
+      if (!isMounted) {
+        return;
+      }
+      const data = response.result;
+      console.count("... Receive Data");
+      console.log(data);
+      setStore(getStoreWithRow(data.Items));
+    }).catch(err => {
+      console.error(err);
+    });
+
+    return () => {
+      isMounted = false;
+    }
+  }, [registrationInformation, localDeleteItemsWith]);
+
   return [
     store,
     setUpdateStoreWith,
+    setDeleteItemWith,
     {
       hasToRegister: !registrationInformation.storeType,
       registrationComponent: (

@@ -22,7 +22,7 @@ import {
 // Functions
 import getDaySpread from "../../helpers/getDaySpread";
 
-function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWidth, taskHeigh, store, editStoreTask}) {
+function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWidth, taskHeigh, store, editStoreTask, editMultipleStoreTasks, deleteStoreTask}) {
   editStoreTask = editStoreTask ?? ((_) => (undefined));
 
   function handleMouseUp() {
@@ -71,22 +71,60 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
 
   function handleAskForDependencyIfDrag(taskdId) {
     let fromTask;
-    let toTaskId;
+    let toTask;
     if (dependencyCouple.from) { // receive to
       fromTask = findTask(dependencyCouple.from);
-      toTaskId = taskdId;
+      toTask = findTask(taskdId);;
     } else if (dependencyCouple.to) { // receive from
       fromTask = findTask(taskdId);
-      toTaskId = dependencyCouple.to;
+      toTask = findTask(dependencyCouple.to);
     }
 
-    if (fromTask && toTaskId && fromTask.Id !== toTaskId) {
-      editStoreTask({
-        ...fromTask,
-        linkedTo: (fromTask.linkedTo ?? new Set()).add(toTaskId)
-      });
-    }
+    if (fromTask && toTask && fromTask.Id !== toTask.Id) {
+      editMultipleStoreTasks([
+        {
+          ...fromTask,
+          linkedTo: (fromTask.linkedTo ?? new Set()).add(toTask.Id)
+        },
+        {
+          ...toTask,
+          linkedFrom: (toTask.linkedFrom ?? new Set()).add(fromTask.Id)
+        }
+      ]);
+    };
     setDependencyCouple({from: undefined, to: undefined});
+  }
+
+  function deleteDependencyFrom(taskIdA, taskIdB) {
+    const taskA = findTask(taskIdA);
+    const taskB = findTask(taskIdB);
+
+    const linkedToA = new Set(taskA.linkedTo ?? new Set());
+    const linkedFromA = new Set(taskA.linkedFrom ?? new Set());
+
+    const linkedToB = new Set(taskB.linkedTo ?? new Set());
+    const linkedFromB = new Set(taskB.linkedFrom ?? new Set());
+
+    linkedToA.delete(taskB.Id);
+    linkedFromA.delete(taskB.Id);
+
+    linkedToB.delete(taskA.Id);
+    linkedFromB.delete(taskA.Id);
+
+    if (taskA && taskB && taskA.Id !== taskB.Id) {
+      editMultipleStoreTasks([
+        {
+          ...taskA,
+          linkedTo: linkedToA,
+          linkedFrom: linkedFromA,
+        },
+        {
+          ...taskB,
+          linkedTo: linkedToB,
+          linkedFrom: linkedFromB,
+        }
+      ]);
+    };
   }
 
   function findTask(taskId) {
@@ -243,6 +281,10 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
     setEditedTask(newTaskObject);
   }
 
+  function deleteCurrentLocalTaskObject(newTaskObject) {
+    deleteStoreTask(newTaskObject)
+  }
+
   function updateLocalTask(taskId, side, clientX, clientY) {
     if (!taskId || !side || (!clientX && !clientY)) {
       return;
@@ -324,6 +366,8 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
       <EditTaskPanel
           taskObject={isEditTaskPanelOpen ? editedTask : {}}
           editTaskObject={editCurrentLocalTaskObject}
+          deleteDependencyFrom={deleteDependencyFrom}
+          deleteTaskObject={deleteCurrentLocalTaskObject}
       />
       {isDrag && (
         <DragDependencyBox
