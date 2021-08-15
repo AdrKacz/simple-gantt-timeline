@@ -11,6 +11,9 @@ function getStoreWithRow(store) {
   const storeMap = {};
 
   store.forEach((item, i) => {
+    // Convert links
+    item.linkedFrom = new Set(item.linkedFrom);
+    item.linkedTo = new Set(item.linkedTo);
     // Convert date
     item.StartDate = new Date(item.StartDate);
     item.DueDate = new Date(item.DueDate);

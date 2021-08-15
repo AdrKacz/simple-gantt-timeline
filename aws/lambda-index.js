@@ -20,9 +20,9 @@ exports.handler = (event, context, callback) => {
   if (action === 'scan') {
     actionPromise = scanAllDocuments();
   } else if (action === 'update') {
-    actionPromise = updateDocument(requestBody.item)
+    actionPromise = updateDocuments(requestBody.items)
   } else if (action === 'delete') {
-    actionPromise = deleteDocument(requestBody.item)
+    actionPromise = deleteDocuments(requestBody.items)
   } else {
     errorResponse('Action not found', context.awsRequestId, callback)
   };
@@ -60,11 +60,24 @@ function scanAllDocuments() {
   }).promise();
 }
 
-function updateDocument(item) {
-  return ddb.put({
-    TableName: process.env.TABLE_NAME,
-    Item: item,
-  }).promise();
+function updateDocuments(items) {
+  return Promise.all(items.map((item, i) => (
+    ddb.put({
+      TableName: process.env.TABLE_NAME,
+      Item: item,
+    }).promise()
+  )));
+}
+
+function deleteDocuments(items) {
+  return Promise.all(items.map((item, i) => (
+    ddb.delete({
+      TableName: process.env.TABLE_NAME,
+      Key: {
+        Id: item.Id,
+      },
+    }).promise()
+  )));
 }
 
 function errorResponse(errorMessage, awsRequestId, callback) {

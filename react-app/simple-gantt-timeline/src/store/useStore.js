@@ -25,7 +25,6 @@ async function fetchAWSStore(information) {
 }
 
 async function updateAWSStore(information, items) {
-
   const response = await fetch(information.apiEndpoint, {
     method: 'POST',
     body: JSON.stringify({
@@ -34,6 +33,8 @@ async function updateAWSStore(information, items) {
         ...item,
         StartDate: new Date(item.StartDate).toISOString(),
         DueDate: new Date(item.DueDate).toISOString(),
+        linkedFrom: Array.from(item.linkedFrom || []),
+        linkedTo: Array.from(item.linkedTo || []),
       }))
 
     }),
@@ -48,7 +49,7 @@ async function deleteAWSItems(information, items) {
     method: 'POST',
     body: JSON.stringify({
       action: 'delete',
-      item: items
+      items: items
     }),
   });
 
