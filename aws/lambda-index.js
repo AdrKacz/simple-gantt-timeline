@@ -11,7 +11,7 @@ exports.handler = (event, context, callback) => {
   if (!event.body) {
     errorResponse('No body found', context.awsRequestId, callback)
   };
-  
+
   const requestBody = JSON.parse(event.body);
 
   const action = requestBody.action;
@@ -21,6 +21,8 @@ exports.handler = (event, context, callback) => {
     actionPromise = scanAllDocuments();
   } else if (action === 'update') {
     actionPromise = updateDocument(requestBody.item)
+  } else if (action === 'delete') {
+    actionPromise = deleteDocument(requestBody.item)
   } else {
     errorResponse('Action not found', context.awsRequestId, callback)
   };

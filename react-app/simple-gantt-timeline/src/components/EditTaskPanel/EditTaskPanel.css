@@ -17,6 +17,8 @@ div.EditTaskPanel {
   width: 55%;
   z-index: 600;
   transition: transform .5s cubic-bezier(0.23, 1, 0.32, 1);
+
+  padding: 0 16px
 }
 
 div.EditTaskPanel.visible {
@@ -39,7 +41,6 @@ div.EditTaskPanel input.taskname:focus {
   border-width: 1px;
   border-style: solid;
   border-radius: 6px;
-  padding: 0 12px;
   box-sizing: border-box;
   background-color: inherit;
   overflow-wrap: break-word;
@@ -59,4 +60,35 @@ div.EditTaskPanel input.taskname:focus {
   padding-top: 4px;
   width: calc(100% + 14px);
   margin-top: 1rem;
+}
+
+div.EditTaskPanel button {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  align-items: center;
+  border: 1px solid;
+  border-radius: 6px;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  overflow: hidden;
+  transition-duration: .2s;
+  transition-property: background,border,box-shadow,color,fill;
+  user-select: none;
+  align-self: stretch;
+  margin: 8px 0 32px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 12px;
+  background: var(--color-beta-background);
+  border-color: var(--color-beta-background);
+  color: var(--color-text-foreground);
+  fill: var(--color-text-foreground);
+}
+
+div.EditTaskPanel button:hover {
+  background: var(--color-beta-background-hover);
+  border-color: var(--color-beta-background-hover);
 }

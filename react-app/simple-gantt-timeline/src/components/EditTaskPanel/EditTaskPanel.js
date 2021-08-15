@@ -1,9 +1,12 @@
+// NOTE: Look at https://www.npmjs.com/package/react-select for improvement
+
+
 import { useState } from "react";
 import Select from "react-select"
 
 import './EditTaskPanel.css';
 
-function EditTaskPanel({taskObject, editTaskObject, deleteDependencyFrom, deleteTaskObject}) {
+function EditTaskPanel({taskObject, editTaskObject, deleteDependencyFrom, deleteTaskObject, findTaskLabel}) {
   const [selectedOption, setSelectionOption] = useState()
 
   function handleOptionChange(newSelectedOption) {
@@ -41,7 +44,7 @@ function EditTaskPanel({taskObject, editTaskObject, deleteDependencyFrom, delete
   const optionsToSelect = Array.from(
     new Set([...(taskObject.linkedTo ?? new Set()), ...(taskObject.linkedFrom ?? new Set())])
   ).map((value, i) => (
-    {value: value, label: value}
+    {value: value, label: findTaskLabel(value)}
   ))
 
   const insideForm = (
@@ -60,6 +63,7 @@ function EditTaskPanel({taskObject, editTaskObject, deleteDependencyFrom, delete
       Delete
       </button>
       <Select
+        isClearable
         value={selectedOption}
         onChange={handleOptionChange}
         options={optionsToSelect}

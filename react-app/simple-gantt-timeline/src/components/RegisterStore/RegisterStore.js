@@ -1,4 +1,4 @@
-// TODO: Look at https://www.npmjs.com/package/react-select for improvement
+// NOTE: Look at https://www.npmjs.com/package/react-select for improvement
 
 import { useState} from "react"
 import Select from "react-select"

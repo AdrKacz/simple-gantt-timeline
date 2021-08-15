@@ -6,7 +6,7 @@ import {
 
 function DragDependency({originAnchor, width, height, handleMouseDown}) {
   const positionStyle = {
-    width: DRAG_SIZE,
+    width: DRAG_SIZE * 0.5,
     height: DRAG_SIZE,
     bottom: height - DRAG_SIZE * 0.1,
   }
@@ -20,9 +20,16 @@ function DragDependency({originAnchor, width, height, handleMouseDown}) {
   return (
     <div
       onMouseDown={handleMouseDown}
-      className="DragDependency"
+      className={"DragDependency" + (!originAnchor ? " revert" : "")}
       style={positionStyle}
-    />
+    >
+      <div
+        className="DragDependencyAntenna"
+      />
+      <div
+        className="DragDependencyLine"
+      />
+    </div>
   )
 }
 

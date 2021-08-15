@@ -1,5 +1,36 @@
 div.DragDependency {
   position: absolute;
 
-  background-color: var(--color-button-icon-secondary);
+  /* background-color: var(--color-button-icon-secondary); */
+}
+
+div.revert {
+  transform: scale(-1);
+}
+
+div.DragDependency div.DragDependencyAntenna {
+  user-select: none;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 10px;
+  position: absolute;
+  transition: transform 200ms;
+  width: 10px;
+  bottom: -4px;
+  left: auto;
+  right: -9px;
+  background-color: var(--color-customization-purple-background-hover);
+}
+
+div.DragDependency div.DragDependencyLine {
+  user-select: none;
+  border-width: 1px;
+  cursor: pointer;
+  height: 100%;
+  position: relative;
+  width: 100%;
+  border-bottom-left-radius: 25%;
+  border-style: none none solid solid;
+  background-color: transparent;
+  border-color: var(--color-customization-purple-background-hover);
 }

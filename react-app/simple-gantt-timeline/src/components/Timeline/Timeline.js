@@ -368,6 +368,7 @@ function Timeline({mouseEvent, fromDate, topOrigin, leftOrigin, maxSpread, dayWi
           editTaskObject={editCurrentLocalTaskObject}
           deleteDependencyFrom={deleteDependencyFrom}
           deleteTaskObject={deleteCurrentLocalTaskObject}
+          findTaskLabel={(taskId) => (findTask(taskId)?.Name)}
       />
       {isDrag && (
         <DragDependencyBox
